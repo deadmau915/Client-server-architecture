@@ -64,22 +64,8 @@ void chunkFile(const string& filePath, const string& chunkName, size_t chunkSize
         partsCounter ++;
     }
 }
-////////////////////////////////////////////////////////////////////////
-    
-int main(int argc, char** argv) {
-    context ctx;
-    socket s(ctx, socket_type::rep);
-    s.bind("tcp://*:5551");
-    string path(argv[1]);
-    int chunkSize = 512000;
-    
-    unordered_map<string,string> songs;
-    
-    DIR *dir;
-    struct dirent *ent;
-    
-    string fullPath = "./" + path;
-    
+
+void readDirectory() {
     string aux;
     if((dir = opendir(fullPath.c_str())) != NULL) {
         
@@ -96,6 +82,41 @@ int main(int argc, char** argv) {
         perror ("");
         return EXIT_FAILURE;
     }
+}
+////////////////////////////////////////////////////////////////////////
+    
+int main(int argc, char** argv) {
+    context ctx;
+    socket s(ctx, socket_type::rep);
+    s.bind("tcp://*:5551");
+    string path(argv[1]);
+    int chunkSize = 512000;
+    
+    unordered_map<string,string> songs;
+    
+    DIR *dir;
+    struct dirent *ent;
+    
+    string fullPath = "./" + path;
+    
+    ////////////////////////////////////////////////////////////////////
+    //~ string aux;
+    //~ if((dir = opendir(fullPath.c_str())) != NULL) {
+        
+        //~ /* print all the files and directories within directory */
+        //~ while((ent = readdir(dir)) != NULL) {
+            
+            //~ aux = path + ent->d_name;
+            //~ songs.insert({ent->d_name, aux});
+        //~ }
+        //~ closedir(dir);
+    //~ }
+    //~ else {
+        //~ /* could not open directory */
+        //~ perror ("");
+        //~ return EXIT_FAILURE;
+    //~ }
+    ////////////////////////////////////////////////////////////////////
     
     cout << "Start serving requests!\n";
     
