@@ -14,13 +14,12 @@ development of a program to multiply matrices that becomes progressively concurr
 
 #### mult0
 Multiplication of matrices sequentially.
-
-to copile
 ```
+to compile
 g++ -std=c++11 file_name.cpp -o file_name.out
 ```
-to execute
 ```
+to execute
 ./file_name.out graph1.dimacs
 ```
 
