@@ -1,6 +1,7 @@
 #include "safeQueue.hh"
 #include <atomic>
 #include <thread>
+#include <unordered_map>
 
 class join_threads
 {
@@ -26,7 +27,7 @@ class thread_pool
   join_threads joiner;
 
   //////////////////////////////////////////////////////
-  std::unordered_map<typename K, typename V> threadsMap;
+  std::unordered_map<int K, int V> threadsMap;
   std::mutex threadsMapMtx;
   //////////////////////////////////////////////////////
 
