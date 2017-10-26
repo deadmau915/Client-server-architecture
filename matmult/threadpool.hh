@@ -27,8 +27,13 @@ class thread_pool
   join_threads joiner;
 
   //////////////////////////////////////////////////////
+<<<<<<< HEAD
   // std::unordered_map<typename K, typename V> threadsMap;
   // std::mutex threadsMapMtx;
+=======
+  std::unordered_map<int K, int V> threadsMap;
+  std::mutex threadsMapMtx;
+>>>>>>> 6b2b9e24a1332f8164686f44df089f1e30e6b1b3
   //////////////////////////////////////////////////////
 
   void worker_thread()
@@ -89,4 +94,7 @@ class thread_pool
       work_queue.push(std::function<void()>(f));
     }
 };
+<<<<<<< HEAD
 
+=======
+>>>>>>> 6b2b9e24a1332f8164686f44df089f1e30e6b1b3
