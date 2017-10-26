@@ -1,6 +1,7 @@
 #include "safeQueue.hh"
 #include <atomic>
 #include <thread>
+#include <unordered_map>
 
 class join_threads
 {
@@ -26,8 +27,8 @@ class thread_pool
   join_threads joiner;
 
   //////////////////////////////////////////////////////
-  std::unordered_map<typename K, typename V> threadsMap;
-  std::mutex threadsMapMtx;
+  // std::unordered_map<typename K, typename V> threadsMap;
+  // std::mutex threadsMapMtx;
   //////////////////////////////////////////////////////
 
   void worker_thread()
@@ -38,28 +39,26 @@ class thread_pool
       if(work_queue.try_pop(task))
       {
         ////////////////////////////////////////////////
-        {
-          threadsMapMtx.lock();
-          auto tid = std::this_thread::get_id();
-          if(threadsMap.count(tid) <= 0){
-            threadsMap.insert(tid, 1);
-          } else {
-            int tcount = threadsMap.get(tid);
-            threadsMap.insert(tid, ++tcount);
-          }
-          threadsMapMtx.unlock();
-        }
+        // {
+        //   threadsMapMtx.lock();
+        //   auto tid = std::this_thread::get_id();
+        //   if(threadsMap.count(tid) <= 0){
+        //     threadsMap.insert(tid, 1);
+        //   } else {
+        //     int tcount = threadsMap.get(tid);
+        //     threadsMap.insert(tid, ++tcount);
+        //   }
+        //   threadsMapMtx.unlock();
+        // }
         ////////////////////////////////////////////////
         task();
-      }
-    } 
-    else
-    {
-      std::this_thread::yield();
+      } 
+      else
+      {
+        std::this_thread::yield();
+      }  
     }
-        
   }
-}
 
   public:
     thread_pool():done(false),joiner(threads)
@@ -90,3 +89,4 @@ class thread_pool
       work_queue.push(std::function<void()>(f));
     }
 };
+
