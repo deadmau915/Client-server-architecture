@@ -3,6 +3,7 @@
 #include <sstream>
 #include <string>
 #include <limits>
+#include <cmath>
 
 #include "timer.hh"
 
@@ -29,7 +30,7 @@ public:
       w[ls[i]] = numeric_limits<int>::max();
       b[ls[i]] = false;
     }
-
+    ls.clear();
   }
 
   void print(){
@@ -41,19 +42,8 @@ public:
         cout << w[i] << " - ";
     }
     cout << endl;
-    // for (int i = 0; i < ls.size(); ++i)
-    // {
-    //   cout << ls[i] << " - ";
-    // }
-    // cout << endl;
   }
 
-};
-
-struct nzStruct
-{
-  vector<int> value;
-  vector<int> col_ind;
 };
 
 void scatterSPA(SparseAcumulator &SPA, int value, int pos){
@@ -67,16 +57,12 @@ void scatterSPA(SparseAcumulator &SPA, int value, int pos){
   }
 }
 
-nzStruct gatherSPA(SparseAcumulator &SPA, vector<int> &val, vector<int> &col_ind){
+void gatherSPA(SparseAcumulator &SPA, sparseMat<int> &mr){
   for (int i = 0; i < SPA.ls.size(); ++i)
   {
-    col_ind.push_back(SPA.ls[i]);
-    val.push_back(min(val[i], SPA.w[SPA.ls[i]]));
+    mr.col_ind.push_back(SPA.ls[i]);
+    mr.val.push_back(SPA.w[SPA.ls[i]]);
   }
-  nzStruct tmp;
-  tmp.value = val;
-  tmp.col_ind = col_ind;
-  return tmp;
 }
 
 void compressVec(vector<int> &row_ptr){
@@ -131,13 +117,6 @@ void readGraphS(string fileName, sparseMat<int> &m) {
   }
 }
 
-// void sparseVectorAdd(sparseMat<int> &mr, nzStruct $nznew, int indice){
-//   for (int i = mr.row_ptr[]; i < count; ++i)
-//   {
-//     /* code */
-//   }
-// }
-
 void sparseADMult(sparseMat<int> &ma, sparseMat<int> &mb, sparseMat<int> &mr) {
 
   SparseAcumulator SPA;
@@ -152,21 +131,17 @@ void sparseADMult(sparseMat<int> &ma, sparseMat<int> &mb, sparseMat<int> &mr) {
       for (int j = mb.row_ptr[ma.col_ind[k]-1]; j < mb.row_ptr[ma.col_ind[k]]; ++j)
       {
         scatterSPA(SPA, ma.val[k]+mb.val[j], mb.col_ind[j]-1);
-        // SPA.print();
       }
-      // nzStruct nznew = gatherSPA(SPA, mr.val, mr.col_ind, i);
-      // mr.row_ptr,push_back(mr.col_ind.size());
-      // SPA.reset();
     }
-    // SPA.print();
+    gatherSPA(SPA, mr);
+    mr.row_ptr.push_back(mr.col_ind.size());
     SPA.reset();
   }
 }
 
 int main(int argc, char const **argv)
 {
-	sparseMat<int> Mat1;
-  sparseMat<int> MatR;
+	sparseMat<int> Mat1, MatR, MatE;
 
   string fileName(argv[1]);
 
@@ -178,17 +153,31 @@ int main(int argc, char const **argv)
 
   Timer t("sparseADMult");
 
-  sparseADMult(Mat1, Mat1, MatR);
+  int timesMult = ceil(log2(Mat1.getDimension()));
 
-  cout << "tiempo: " << t.elapsed() << endl;
+  for (int i = 0; i < timesMult; ++i)
+  {
 
-  // cout << Mat1.row_ptr[7] << endl;
 
-  // SparseAcumulator SPA;
+    sparseADMult(Mat1, Mat1, MatR);
 
-  // SPA.init(Mat1.getDimension());
+    cout << "mat1-c: " << Mat1.col_ind.size() << "- matr-c: " << MatR.col_ind.size() << endl;
+    cout << "mat1-f: " << Mat1.row_ptr.size() << "- matr-f: " << MatR.row_ptr.size() << endl;
+    Mat1.val.clear();
+    Mat1.col_ind.clear();
+    Mat1.row_ptr.clear();
+    Mat1.val.resize(MatR.val.size());
+    Mat1.col_ind.resize(MatR.col_ind.size());
+    Mat1.row_ptr.resize(MatR.row_ptr.size());
+    // Mat1.val = MatR.val;
+    // Mat1.col_ind = MatR.col_ind;
+    // Mat1.row_ptr = MatR.row_ptr;
 
-  // cout << SPA.w[1] << endl;
-  // cout << SPA.b[1] << endl;
+    // MatR = MatE;
+  }
+
+  // Mat1.print();
+
+  // cout << "tiempo: " << t.elapsed() << endl;
   
 }
