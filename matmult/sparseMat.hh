@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 
-using std::vector;
+// using std::vector;
+using namespace std;
 
 template <typename T> class sparseMat
 {
@@ -17,6 +18,17 @@ public:
 	sparseMat() {}
 
 	sparseMat(T dimension, vector<T> val, vector<T> col_ind, vector<T> row_ptr): dimension(dimension), col_ind(col_ind), row_ptr(row_ptr) {}
+
+	void print(){
+		for (int i = 0; i < row_ptr.size(); ++i)
+		{
+			for (int j = row_ptr[i]; j < row_ptr[i+1]; ++j)
+			{
+				cout << "(" << col_ind[j] << " - " << val[j] << ")" << " - ";
+			}
+			cout << endl;
+		}
+	}
 
 	void setDimension(T element) {
 		dimension = element;
