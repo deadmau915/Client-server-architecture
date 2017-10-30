@@ -58,15 +58,16 @@ void benchmark(int times, const string &fileName) {
 
   int timesMult = ceil(log2(g.size()));
 
-  cout << timesMult << endl;
+  // cout << timesMult << endl;
 
-  for (int i = 0; i < timesMult; ++i)
-  {
-    ad0(g, g, r);
-    g = r;
-    r = empty;
-  }
-  printMat(g);
+  // for (int i = 0; i < timesMult; ++i)
+  // {
+  //   ad0(g, g, r);
+  //   g = r;
+  //   r = empty;
+  // }
+  ad0(g, g, r);
+  printMat(r);
 }
 
 int main(int argc, char **argv) {

@@ -7,12 +7,15 @@ template <typename T> class sparseMat
 {
 private:
 	T dimension;
+	
+public:
+	
 	mutable vector<T> val;
 	mutable vector<T> col_ind;
 	mutable vector<T> row_ptr;
 
-public:
 	sparseMat() {}
+
 	sparseMat(T dimension, vector<T> val, vector<T> col_ind, vector<T> row_ptr): dimension(dimension), col_ind(col_ind), row_ptr(row_ptr) {}
 
 	void setDimension(T element) {
