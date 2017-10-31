@@ -13,9 +13,9 @@ class SparseAcumulator
 {
 
 public:
-  vector<int> w;
-  vector<bool> b;
-  vector<int> ls;
+  mutable vector<int> w;
+  mutable vector<bool> b;
+  mutable vector<int> ls;
   SparseAcumulator() {}
   ~SparseAcumulator() {}
 
@@ -52,8 +52,7 @@ void scatterSPA(SparseAcumulator &SPA, int value, int pos){
     SPA.b[pos] = true;
     SPA.ls.push_back(pos);
   } else {
-    SPA.w[pos] = min(SPA.w[pos], value);
-    
+    SPA.w[pos] = min(SPA.w[pos], value);   
   }
 }
 
@@ -81,8 +80,6 @@ void compressVec(vector<int> &row_ptr){
     }
   }
 
-  row_ptr.clear();
-  row_ptr.resize(compressedRow.size());
   row_ptr = compressedRow;
 
 }
@@ -120,7 +117,7 @@ void readGraphS(string fileName, sparseMat<int> &m) {
 void sparseADMult(sparseMat<int> &ma, sparseMat<int> &mb, sparseMat<int> &mr) {
 
   SparseAcumulator SPA;
-  SPA.set(ma.getDimension());
+  SPA.set(ma.getDimension()+1);
 
   mr.row_ptr.push_back(0);
 
@@ -130,7 +127,7 @@ void sparseADMult(sparseMat<int> &ma, sparseMat<int> &mb, sparseMat<int> &mr) {
     {
       for (int j = mb.row_ptr[ma.col_ind[k]-1]; j < mb.row_ptr[ma.col_ind[k]]; ++j)
       {
-        scatterSPA(SPA, ma.val[k]+mb.val[j], mb.col_ind[j]-1);
+        scatterSPA(SPA, ma.val[k]+mb.val[j], mb.col_ind[j]);
       }
     }
     gatherSPA(SPA, mr);
@@ -141,7 +138,7 @@ void sparseADMult(sparseMat<int> &ma, sparseMat<int> &mb, sparseMat<int> &mr) {
 
 int main(int argc, char const **argv)
 {
-	sparseMat<int> Mat1, MatR, MatE;
+	sparseMat<int> Mat1, MatR;
 
   string fileName(argv[1]);
 
@@ -157,27 +154,17 @@ int main(int argc, char const **argv)
 
   for (int i = 0; i < timesMult; ++i)
   {
-
-
     sparseADMult(Mat1, Mat1, MatR);
-
-    cout << "mat1-c: " << Mat1.col_ind.size() << "- matr-c: " << MatR.col_ind.size() << endl;
-    cout << "mat1-f: " << Mat1.row_ptr.size() << "- matr-f: " << MatR.row_ptr.size() << endl;
-    Mat1.val.clear();
-    Mat1.col_ind.clear();
-    Mat1.row_ptr.clear();
-    Mat1.val.resize(MatR.val.size());
-    Mat1.col_ind.resize(MatR.col_ind.size());
-    Mat1.row_ptr.resize(MatR.row_ptr.size());
-    // Mat1.val = MatR.val;
-    // Mat1.col_ind = MatR.col_ind;
-    // Mat1.row_ptr = MatR.row_ptr;
-
-    // MatR = MatE;
+    Mat1.val = MatR.val;
+    Mat1.col_ind = MatR.col_ind;
+    Mat1.row_ptr = MatR.row_ptr;
+    MatR.val.clear();
+    MatR.col_ind.clear();
+    MatR.row_ptr.clear();
   }
 
-  // Mat1.print();
+  Mat1.print();
 
-  // cout << "tiempo: " << t.elapsed() << endl;
+  cout << "tiempo: " << t.elapsed() << endl;
   
 }
